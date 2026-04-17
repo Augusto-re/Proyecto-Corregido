@@ -8,7 +8,7 @@
 
 ## Entorno Virtual
 
-> ⚠ Este proyecto requiere Python 3.12.9
+> ⚠ Este proyecto requiere Python 3.13.12
 
 ```bash
 Creacion : python -m venv venv
