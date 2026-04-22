@@ -43,8 +43,7 @@ def coordenadas_invalidas (datasets_paths: Path):
 
     return len(coordenadas_invalidas), coordenadas_invalidas
 
-    # ---------------------Inciso D----------------------
-
+# ---------------------Inciso D----------------------
 def registros_duplicados(datasets_paths: Path):
     """
     Args:
@@ -64,7 +63,7 @@ def registros_duplicados(datasets_paths: Path):
         archivo = manejo_archivos.get_archive(path, **config)
 
         for dato in archivo:
-            id_dato = dato.get('ID')
+            id_dato = dato.get('id') or dato.get('gbifID') or dato.get('ID')
             if id_dato in ids_vistos:
                 ids_duplicados.add(id_dato)
             else:
@@ -73,7 +72,7 @@ def registros_duplicados(datasets_paths: Path):
     return len(ids_duplicados), list(ids_duplicados)
 
 #---------------------Inciso E----------------------
-
+# countryCode / countryCode
 def country_codes_invalidos(datasets_paths: Path):
     """
     Args:
@@ -99,8 +98,13 @@ def country_codes_invalidos(datasets_paths: Path):
 
         for dato in archivo:
             country_code = dato.get('countryCode')
-            # Verificar si el countryCode es válido y agregarlo a la lista de códigos inválidos si no lo es
-            if country_code and country_code not in codigos_paises_validos:
-                codigos_invalidos.add(country_code)
 
+            # Eliminar espacios en blanco y convertir a mayúsculas para comparar con los códigos válidos
+            if country_code:
+                country_code = country_code.strip().upper()
+                
+                # Verificar si el countryCode es válido y agregarlo a la lista de códigos inválidos si no lo es
+                if country_code not in codigos_paises_validos:
+                    codigos_invalidos.add(country_code)
+                    
     return list(codigos_invalidos)
