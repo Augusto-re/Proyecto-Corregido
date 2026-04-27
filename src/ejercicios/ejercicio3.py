@@ -1,8 +1,9 @@
 from utils import manejo_archivos
 from utils.config_archivo import  get_core_info
+from utils.constantes import CAMPOS_FECHA_DWC
 from pathlib import Path
 import string
-
+from datetime import datetime
 
 
 
@@ -42,6 +43,60 @@ def coordenadas_invalidas (datasets_paths: Path):
         coordenadas_invalidas.extend(list(filter(revisar_coordenadas, archivo)))
 
     return len(coordenadas_invalidas), coordenadas_invalidas
+
+
+
+
+def validar_fecha_dwc(valor):
+    anio_actual = datetime.now().year
+
+    valor = str(valor).strip()
+    if valor in ("", "nan", "none"):
+        return False
+
+    # Sacar solo la parte fecha (ignorar TIME si existe)
+    parte = valor.split("T")[0]
+
+    # Intentar convertir — si falla, no es fecha válida
+    fecha_obj = None
+    for fmt in ["%Y-%m-%d", "%Y-%m", "%Y"]:
+        try:
+            fecha_obj = datetime.strptime(parte, fmt)
+            break
+        except ValueError:
+            continue
+
+    if fecha_obj is None:
+        return False
+
+    if fecha_obj.year > anio_actual:
+        return False
+
+    return True
+
+
+def fechas_invalidas(datasets_paths: Path):
+    """
+    Args:
+        datasets_paths (Path): rutas de los archivos a buscar
+    Returns:
+        tuple: cantidad de errores y lista de registros con fecha inválida
+    """
+    def revisar_fechas(dato):
+        for campo in CAMPOS_FECHA_DWC:
+            valor = dato.get(campo)
+            if valor is not None and not validar_fecha_dwc(valor):
+                return True  # inválido
+        return False  # válido
+
+    fechas_invalidas = []
+    for path in datasets_paths:
+        config, core = get_core_info(path)
+        path = path / core
+        archivo = manejo_archivos.get_archive(path, **config)
+        fechas_invalidas.extend(list(filter(revisar_fechas, archivo)))
+
+    return len(fechas_invalidas), fechas_invalidas
 
 # ---------------------Inciso D----------------------
 def registros_duplicados(datasets_paths: Path):
