@@ -73,3 +73,77 @@ def get_archive(path: Path, **config):
             )
 
         return list(reader)
+
+def write_archive(data: list, path: Path,core, **config):
+    """
+    Args:
+        data (list): Lista de diccionarios a escribir en el archivo
+        path (Path): Ruta del archivo a escribir
+        **config: Configuracion para abrir el archivo
+
+    Returns:
+        None
+    """    
+    encoding = config.get("encoding", "utf-8")
+    delimiter = config.get("fieldsTerminatedBy", "\t")
+    enclosure = config.get("fieldsEnclosedBy", "")
+
+    columnas = []
+    for r in data:
+        for k in r.keys():
+            if k not in columnas: columnas.append(k)
+            
+    with path.open(encoding=encoding, mode="w", newline="") as f:
+        if enclosure:
+            writer = csv.DictWriter(
+                f,
+                fieldnames=columnas,
+                delimiter=delimiter,
+                quotechar=enclosure
+            )
+        else:
+            writer = csv.DictWriter(
+                f,
+                fieldnames=columnas,
+                delimiter=delimiter
+            )
+
+        writer.writeheader()
+        writer.writerows(data)
+
+def appened_archive(data: list, path: Path, **config):
+    """
+    Args:
+        data (list): Lista de diccionarios a escribir en el archivo
+        path (Path): Ruta del archivo a escribir
+        **config: Configuracion para abrir el archivo
+
+    Returns:
+        None
+    """    
+    encoding = config.get("encoding", "utf-8")
+    delimiter = config.get("fieldsTerminatedBy", "\t")
+    enclosure = config.get("fieldsEnclosedBy", "")
+
+    columnas = []
+    for r in data:
+        for k in r.keys():
+            if k not in columnas: columnas.append(k)
+        
+    with path.open(encoding=encoding, mode="a", newline="") as f:
+        if enclosure:
+            writer = csv.DictWriter(
+                f,
+                fieldnames=columnas,
+                delimiter=delimiter,
+                quotechar=enclosure
+            )
+        else:
+            writer = csv.DictWriter(
+                f,
+                fieldnames=columnas,
+                delimiter=delimiter
+            )
+
+        # No escribimos el header porque ya existe, solo las filas nuevas
+        writer.writerows(data)
