@@ -44,6 +44,32 @@ def coordenadas_invalidas (datasets_paths: Path):
 
     return len(coordenadas_invalidas), coordenadas_invalidas
 
+def coordenadas_validas_longitud (VALOR):
+    """
+    Args:
+        valor (str): valor a verificar
+
+    Returns:
+        _type_: true si el valor es valido , false si es invalido
+    """
+    if not (-180 <= VALOR <= 180):
+        return False  # inválido
+
+    return True  # válido
+
+def coordenadas_validas_latitud (VALOR):
+    """
+    Args:
+        valor (str): valor a verificar
+
+    Returns:
+        _type_: true si el valor es valido , false si es invalido
+    """
+
+    if not (-90 <= VALOR <= 90):
+        return False  # inválido
+
+    return True  # válido
 
 
 
@@ -128,38 +154,19 @@ def registros_duplicados(datasets_paths: Path):
 
 #---------------------Inciso E----------------------
 # countryCode / countryCode
-def country_codes_invalidos(datasets_paths: Path):
+def country_codes_validos(VALOR):
     """
     Args:
-        datasets_paths (Path): rutas de los archivos a buscar
+       valor (str): valor a verificar
 
     Returns:
-        _type_: _description_
+        _type_: true si el valor es valido , false si es invalido
     """
 
-    # caracteres alfabéticos en mayúscula, con una longitud de dos caracteres para identificar paises.
+    # Lista de códigos de país válidos
     codigos_paises_validos = set(string.ascii_uppercase[i] 
                                  + string.ascii_uppercase[j] 
                                  for i in range(26) for j in range(26))
 
-    codigos_invalidos = set()
 
-    for path in datasets_paths:
-
-        config, core = get_core_info(path)
-        path = path / core
-
-        archivo = manejo_archivos.get_archive(path, **config)
-
-        for dato in archivo:
-            country_code = dato.get('countryCode')
-
-            # Eliminar espacios en blanco y convertir a mayúsculas para comparar con los códigos válidos
-            if country_code:
-                country_code = country_code.strip().upper()
-                
-                # Verificar si el countryCode es válido y agregarlo a la lista de códigos inválidos si no lo es
-                if country_code not in codigos_paises_validos:
-                    codigos_invalidos.add(country_code)
-                    
-    return list(codigos_invalidos)
+    return VALOR in codigos_paises_validos
