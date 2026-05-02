@@ -53,3 +53,42 @@ def eliminar_registro(contexto: dict):
 
     write_archive(archivo, path, **config)
     print(f"Se eliminó correctamente el registro {id_objetivo}")
+
+
+
+
+def eliminar_registro_de_columna(contexto: dict):
+    path = contexto['archivo']
+    config = contexto['config']
+
+    archivo = get_archive(path, **config)
+
+    columnas =  list(archivo[0].keys())
+
+    print("selecione columna de interes")
+    for i, columna in enumerate(columnas):
+        print(f"{i} - {columna}")
+    
+    columna = int(input("selecionar: "))
+
+    columna = columnas[columna]
+
+    valores = []
+    print('Ingrese los valores a eliminar \n exit para salir')
+    valor = input('').lower()
+    while valor != 'exit':
+        valores.append(valor)
+        valor = input('').lower()
+
+    # eliminar registros:
+    try:
+        archivo = list(filter(lambda x: x.get(columna).lower() not in valores , archivo))
+        write_archive(archivo, path, **config)
+    except Exception as e:
+        print("ocurrio un error al modificar el archivo")
+        print(f"Error: {e}")
+        print(f"Tipo de error: {type(e)}")
+    else:
+        print("archivo modificador")
+    
+    return None
