@@ -74,7 +74,7 @@ def get_archive(path: Path, **config):
 
         return list(reader)
 
-def write_archive(data: list, path: Path,core, **config):
+def write_archive(data: list, path: Path, **config):
     """
     Args:
         data (list): Lista de diccionarios a escribir en el archivo

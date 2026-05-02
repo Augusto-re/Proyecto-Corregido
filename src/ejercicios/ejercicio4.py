@@ -2,6 +2,7 @@ from utils import manejo_archivos
 from ejercicios import ejercicio3
 import random
 import string
+import json
 
 def generar_registro_vacio(header):
     """
@@ -107,13 +108,31 @@ def generar_id(dataset, datasets_names ):
         
     return id_generado
 
+def guardar_metadata(meta_path, config):
 
-def insertar_registro(DATASETS_PATH_PROCESSED , registros , archivo , **configs):
-    ruta = (DATASETS_PATH_PROCESSED / configs.get('core'))
-    #si archivo procesado se encuentra en la carpeta processed_datasets + agregar el nuevo registro al final del archivo
-    if (ruta.exists()):
-        manejo_archivos.appened_archive([registros], ruta, **configs)
+    with meta_path.open("w", encoding="utf-8") as f:
+        json.dump(config, f, indent=4)
+
+def insertar_registro(DATASETS_PATH_PROCESSED, nombre_dataset, registro, archivo, **configs):
+    core = configs.get('core')  # nombre del archivo (sin extensión)
+
+    # Crear carpeta del dataset
+    dir_path = DATASETS_PATH_PROCESSED / nombre_dataset
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+    # Ruta del CSV
+    print(dir_path)
+    print(core)
+    
+    ruta_csv = dir_path / f"{core}"
+
+    # Insertar o crear
+    if ruta_csv.exists():
+        manejo_archivos.appened_archive([registro], ruta_csv, **configs)
     else:
-        # Creamos una lista que contenga todos los elementos y escribimos una sola vez
-        archivo.append(registros)
-        manejo_archivos.write_archive(archivo, ruta, **configs) 
+        archivo.append(registro)
+        manejo_archivos.write_archive(archivo, ruta_csv, **configs)
+
+    ruta_meta_json = dir_path / "meta.json"
+    # Guardar metadata
+    guardar_metadata(ruta_meta_json, configs)
