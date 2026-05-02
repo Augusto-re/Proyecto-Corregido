@@ -21,7 +21,7 @@ def valuesInColumn(dataset:Path, columns_name: str):
     archivo = manejo_archivos.get_archive(archivo_path, **config)
 
     if columns_name not in archivo[0].keys():
-        return 0
+        return 0 #si no existe el nombre de columna
 
     for row in archivo:
         values.update([row[columns_name]])
@@ -51,8 +51,8 @@ def valueFrecuenseInColumn(dataset: Path, columns_name: str):
     values_in_column = {}
 
     for row in archivo:
-        value = row.get(columns_name)
-        values_in_column[value] = values_in_column.get(value, 0) + 1
+        value = row.get(columns_name) #accedo a la columna
+        values_in_column[value] = values_in_column.get(value, 0) + 1 #sumo 1 en frecuencia
 
 
     return values_in_column
