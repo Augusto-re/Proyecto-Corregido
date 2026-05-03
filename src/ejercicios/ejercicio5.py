@@ -80,3 +80,87 @@ def actualizar_campo(path_raw: Path, id_registro: str, columna: str, nuevo_valor
     config["core"] = core
     _guardar_dataset(archivo, path_raw, **config)
     return True
+
+
+# ---------------------Inciso C----------------------
+def actualizar_campos(path_raw: Path, id_registro: str, nuevos_valores: dict):
+    """
+    Actualiza múltiples campos de un registro en una sola operación.
+
+    Args:
+        path_raw (Path): Ruta a la carpeta del dataset.
+        id_registro (str): ID del registro a modificar.
+        nuevos_valores (dict): Columnas y nuevos valores.
+                               Ejemplo: {"country": "Argentina", "stateProvince": "Buenos Aires"}
+
+    Returns:
+        bool: True si se encontró y modificó el registro, False si no se encontró.
+    """
+    config, core = get_core_info(path_raw)
+    archivo = manejo_archivos.get_archive(path_raw / core, **config)
+
+    encontrado = False
+    for fila in archivo:
+        id_fila = fila.get("id") or fila.get("gbifID") or fila.get("ID")
+        if id_fila == id_registro:
+            for columna, valor in nuevos_valores.items():
+                fila[columna] = valor
+            encontrado = True
+            break
+
+    if not encontrado:
+        print(f"ERROR: No se encontró el registro con ID '{id_registro}'.")
+        return False
+
+    config["core"] = core
+    _guardar_dataset(archivo, path_raw, **config)
+    return True
+
+
+# ---------------------Inciso D----------------------
+def actualizar_campos_validado(path_raw: Path, id_registro: str, nuevos_valores: dict):
+    """
+    Actualiza múltiples campos de un registro validando los nuevos valores
+    antes de aplicar los cambios.
+
+    Args:
+        path_raw (Path): Ruta a la carpeta del dataset.
+        id_registro (str): ID del registro a modificar.
+        nuevos_valores (dict): Columnas y nuevos valores a aplicar.
+
+    Returns:
+        bool: True si la validación pasó y se guardaron los cambios, False si falló.
+    """
+    config, core = get_core_info(path_raw)
+    archivo = manejo_archivos.get_archive(path_raw / core, **config)
+
+    encontrado = False
+    for fila in archivo:
+        id_fila = fila.get("id") or fila.get("gbifID") or fila.get("ID")
+        if id_fila == id_registro:
+            # Aplicamos los cambios en una copia para validar sin modificar el original
+            copia = dict(fila)
+            for columna, valor in nuevos_valores.items():
+                copia[columna] = valor
+
+            if not validar_registro(copia, **config):
+                print(
+                    f"ERROR: Los nuevos valores no pasaron la validación. Registro no modificado."
+                )
+                return False
+
+            # Si la validación pasó, aplicamos los cambios al original
+            for columna, valor in nuevos_valores.items():
+                fila[columna] = valor
+
+            encontrado = True
+            break
+
+    if not encontrado:
+        print(f"ERROR: No se encontró el registro con ID '{id_registro}'.")
+        return False
+
+    config["core"] = core
+    _guardar_dataset(archivo, path_raw, **config)
+    print(f"Registro '{id_registro}' actualizado correctamente.")
+    return True
