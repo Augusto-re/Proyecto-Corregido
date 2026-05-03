@@ -1,61 +1,85 @@
-# ------------------ Ejaercicio 1 A ------------------
+# Documentación del dataset Xeno-canto
 
-Nombre del dataset: iNaturalist Research-grade Observations.
+## eml.xml
 
-Institución proveedora: iNaturalist.
+- Nombre del dataset - `<title>`
+  - Xeno-canto - Bird sounds from around the world
+- Institución proveedora - `<creator><organizationName>`
+  - Xeno-canto Foundation for Nature Sounds
+- Cantidad de registros - `<abstract>`
+  - No figura cantidad exacta. Es un subconjunto del repositorio completo disponible en xeno-canto.org
+- Cobertura geográfica - `<coverage><geographicCoverage><geographicDescription>`
+  - Global. Límites: Norte: 90, Sur: -90, Oeste: -180, Este: 180
+- Cobertura temporal - `<formationPeriod>`
+  - Desde 1900 hasta la actualidad
+- Tipo de licencia - `<intellectualRights>`
+  - Creative Commons Attribution Non Commercial (CC-BY-NC) 4.0 License
+- Frecuencia de actualización
+  - No figura frecuencia de actualización planificada. Última publicación: 2026-02-17 (`<pubDate>`)
 
-Cantidad de registros: 53.854 .
+## meta.xml
 
-Cobertura geográfica: Límites: Norte: 90 , Sur: -90, Oeste: -180, Este: -180.
+- Separador de campos - `<archive><core fieldsTerminatedBy>`
+  - `,` (coma)
+- Codificación de caracteres - `<archive><core encoding>`
+  - UTF-8
+- Archivo principal - `<core><files><location>`
+  - `Occurrence.txt`
+- Archivo de extensión - `<extension><files><location>`
+  - `Multimedia.txt`
 
-Cobertura temporal: Desde el 17/8/1768 hasta el 16/2/2026.
+---
 
-Separador de campos: "," (coma).
+## Ejercicio 1.B — Descripción de archivos y atributos
 
-Codificación de caracteres: UTF-8.
+Occurrence.txt : Este archivo contiene los registros de avistamiento y grabación de sonidos de aves alrededor del mundo.
 
-Tipo de licencia: Creative Commons Attribution-NonCommercial License (CC BY-NC 4.0).
+Atributo , Descripción , Ejemplo de valor :
 
-Frecuencia de actualización: Semanal.
+id , Identificador interno del registro , 12345
 
-# ------------------ Ejaercicio 1 B ------------------
+occurrenceID , Identificador único de la grabación en Xeno-canto , XC123456
 
-Ocurrence.txt : Este archivo contiene los registros de las observaciones biológicas.
+basisOfRecord , Tipo de registro de la observación , HumanObservation
 
-Atributo , Descripción , Ejemplo de Valor :
-
-id / occurrenceID , Identificador único numérico de la observación en iNaturalist , 1771282821
-
-basisOfRecord , una observacion que hace un investigador basandose en la evidencia , HumanObservation
-
-eventDate , La fecha y hora exacta en la que se realizó la observación , 2024-05-12T14:30:00Z
-
-scientificName , El nombre científico completo del organismo observado , Danaus plexippus
+scientificName , Nombre científico completo del ave grabada , Elaenia chilensis
 
 kingdom , Reino al que pertenece el organismo , Animalia
 
-decimalLatitude , La latitud geográfica de la observación , -34.6037
+family , Familia taxonómica del ave , Tyrannidae
 
-decimalLongitude , La longitud geográfica de la observación , -58.3816
+genus , Género taxonómico del ave , Elaenia
 
-taxonRank , La categoría del nombre identificado , "species, genus, family"
+vernacularName , Nombre común del ave , Chilean Elaenia
 
-recordedBy , El nombre o seudónimo del usuario de iNaturalist que realizó la observación , usuario_naturaleza123
+decimalLatitude , Latitud geográfica de la grabación en grados decimales , -32.8908
 
-Multimedia.txt : Este archivo vincula las observaciones de Ocurrence.txt con los archivos multimedia (fotos o sonidos) que sirven como evidencia.
+decimalLongitude , Longitud geográfica de la grabación en grados decimales , -68.8272
 
-Atributo , Descripción , Ejemplo de Valor :
+country , País donde se realizó la grabación , Argentina
 
-id , El identificador de la ocurrencia (vincula este medio con el registro en Occurrence.txt) , 1771282821
+locality , Descripción del lugar de la grabación , Mendoza, cerca del río
 
-type , Indica si el recurso es una imagen fija, un video o un sonido , "StillImage, Sound"
+eventDate , Fecha en que se realizó la grabación , 2021-11-15
 
-format , El tipo de formato MIME del archivo digital , "image/jpeg, audio/mpeg"
+recordedBy , Nombre del grabador , Willem-Pier Vellinga
 
-identifier , La URL directa donde se encuentra alojado el archivo original , https://inaturalist-open-data.s3.../original.jpg
+behavior , Comportamiento del ave durante la grabación , singing
 
-references,Página web de referencia de la observación en el portal de iNaturalist , https://www.inaturalist.org/photos/12345
+license , Licencia aplicada a la grabación , CC-BY-NC 4.0
 
-license , La licencia específica aplicada a ese recurso multimedia , CC-BY-NC 4.0
+Multimedia.txt : Este archivo vincula cada registro de Occurrence.txt con su archivo de audio correspondiente.
 
-creator , La persona que tomó la fotografía o grabó el sonido , Juan Pérez
+Atributo , Descripción , Ejemplo de valor :
+
+id , Identificador que vincula con el registro en Occurrence.txt , 12345
+
+identifier , URL directa al archivo de audio , https://xeno-canto.org/sounds/uploaded/...
+
+type , Tipo de recurso multimedia , Sound
+
+format , Formato MIME del archivo , audio/mpeg
+
+creator , Persona que realizó la grabación , Juan Pérez
+
+rights , Licencia aplicada al recurso multimedia , CC-BY-NC 4.0

@@ -2,7 +2,9 @@
 
 - Santiago Ariel Alvares
 - Marcos Paulo Pissani
-- August Retamozo
+- Augusto Retamozo
+- Nicolás Guzzo
+- Laureano Savia
 
 # Instalacion de las dependencias <!-- Título grande con h1 -->
 
