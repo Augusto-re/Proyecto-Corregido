@@ -138,18 +138,38 @@ def actualizar_campos_validado(path_raw: Path, id_registro: str, nuevos_valores:
     for fila in archivo:
         id_fila = fila.get("id") or fila.get("gbifID") or fila.get("ID")
         if id_fila == id_registro:
-            # Aplicamos los cambios en una copia para validar sin modificar el original
             copia = dict(fila)
             for columna, valor in nuevos_valores.items():
                 copia[columna] = valor
 
-            if not validar_registro(copia, **config):
+            # Validación propia para no depender de tipos en validar_registro
+            errores = []
+            for campo in ("decimalLatitude", "latitudeDecimal"):
+                val = copia.get(campo)
+                if val not in (None, "", " "):
+                    try:
+                        if not (-90 <= float(val) <= 90):
+                            errores.append(f"{campo} fuera de rango: {val}")
+                    except (ValueError, TypeError):
+                        errores.append(f"{campo} no es numérico: {val}")
+
+            for campo in ("decimalLongitude", "longitudeDecimal"):
+                val = copia.get(campo)
+                if val not in (None, "", " "):
+                    try:
+                        if not (-180 <= float(val) <= 180):
+                            errores.append(f"{campo} fuera de rango: {val}")
+                    except (ValueError, TypeError):
+                        errores.append(f"{campo} no es numérico: {val}")
+
+            if errores:
                 print(
                     f"ERROR: Los nuevos valores no pasaron la validación. Registro no modificado."
                 )
+                for e in errores:
+                    print(f"  - {e}")
                 return False
 
-            # Si la validación pasó, aplicamos los cambios al original
             for columna, valor in nuevos_valores.items():
                 fila[columna] = valor
 
