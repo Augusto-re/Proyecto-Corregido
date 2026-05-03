@@ -33,14 +33,14 @@ def ejecutar_sobre_dataset(datasets_paths:list[Path], funcion):
         processed_path = DATASETS_PATH_PROCESSED / raw_path.name
         archivo = processed_path / core
 
-        contexto = {
+        datos = {
             "path": processed_path,
             "config": config,
             "core": core,
             "archivo": archivo,
         }
 
-        funcion(contexto)
+        funcion(datos)
 
         ingresar = input("\n¿Desea operar sobre otro dataset? (s/n): ").lower()
         while ingresar not in ['s', 'n']:
