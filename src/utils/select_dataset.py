@@ -1,4 +1,4 @@
-from .constantes import DATASETS_PATH_PROCESSED
+from .constantes import DATASETS_PATH_PROCESSED, DATASETS_PATH_RAW
 from .config_archivo import get_core_info
 from pathlib import Path
 
@@ -34,7 +34,8 @@ def ejecutar_sobre_dataset(datasets_paths:list[Path], funcion):
         archivo = processed_path / core
 
         datos = {
-            "path": processed_path,
+            "processed_path": processed_path,
+            "raw_path": raw_path,
             "config": config,
             "core": core,
             "archivo": archivo,
