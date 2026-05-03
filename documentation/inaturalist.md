@@ -1,4 +1,4 @@
-# ------------------ Ejaercicio 1 A ------------------
+# ------------------ Ejercicio 1 A ------------------
 
 Nombre del dataset: iNaturalist Research-grade Observations.
 
@@ -18,7 +18,7 @@ Tipo de licencia: Creative Commons Attribution-NonCommercial License (CC BY-NC 4
 
 Frecuencia de actualización: Semanal.
 
-# ------------------ Ejaercicio 1 B ------------------
+# ------------------ Ejercicio 1 B ------------------
 
 Ocurrence.txt : Este archivo contiene los registros de las observaciones biológicas.
 
