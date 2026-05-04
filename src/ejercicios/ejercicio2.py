@@ -113,7 +113,6 @@ def valueFrecuenseInColumn(dataset: Path, columns_name: str):
     """    
     config, core = get_core_info(dataset)
     archivo_path = dataset / core
-    values = set()
     archivo = manejo_archivos.get_archive(archivo_path, **config)
     values_in_column = {}
 
