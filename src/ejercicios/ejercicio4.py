@@ -30,10 +30,10 @@ def validar_registro(registro, **config):
     for clave, valor in registro.items():
         match clave:
             case "longitudeDecimal" | "decimalLongitude" :
-                if not ejercicio3.coordenadas_validas_longitud(valor):
+                if not ejercicio3.coordenadas_validas_longitud(float(valor)):
                     return False  # coordenadas inválidas
             case "latitudeDecimal" | "decimalLatitude":
-                if not ejercicio3.coordenadas_validas_latitud(valor):
+                if not ejercicio3.coordenadas_validas_latitud(float(valor)):
                     return False  # coordenadas inválidas
             case "countryCode":
                 if not ejercicio3.country_codes_validos(valor):
