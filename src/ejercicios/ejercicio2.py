@@ -3,7 +3,7 @@ from utils.config_archivo import get_core_info
 from pathlib import Path
 
 
-def columnas_con_nulos(datasets_paths: list[Path]):
+def columnas_con_nulos(datasets_paths, configs):
     """
     Retorna las columnas que poseen al menos un valor nulo o vacío
     en cada dataset.
@@ -16,10 +16,8 @@ def columnas_con_nulos(datasets_paths: list[Path]):
     """
     resultado = {}
 
-    for path in datasets_paths:
-        config, core = get_core_info(path)
-        archivo_path = path / core
-        archivo = manejo_archivos.get_archive(archivo_path, **config)
+    for path, config in zip(datasets_paths, configs):
+        archivo = manejo_archivos.get_archive(path, **config)
 
         columnas_nulas = set()
         for fila in archivo:
@@ -32,7 +30,7 @@ def columnas_con_nulos(datasets_paths: list[Path]):
     return resultado
 
 
-def porcentaje_nulos_por_columna(datasets_paths: list[Path]):
+def porcentaje_nulos_por_columna(datasets_paths, configs):
     """
     Retorna el porcentaje de valores nulos por columna para cada dataset.
 
@@ -45,10 +43,8 @@ def porcentaje_nulos_por_columna(datasets_paths: list[Path]):
     """
     resultado = {}
 
-    for path in datasets_paths:
-        config, core = get_core_info(path)
-        archivo_path = path / core
-        archivo = manejo_archivos.get_archive(archivo_path, **config)
+    for path, config in zip(datasets_paths, configs):
+        archivo = manejo_archivos.get_archive(path, **config)
 
         conteo_nulos = {}
         total = 0
@@ -72,7 +68,7 @@ def porcentaje_nulos_por_columna(datasets_paths: list[Path]):
     return resultado
 
 #ejercicio 2G
-def valuesInColumn(dataset:Path, columns_name: str):
+def valuesInColumn(archivo_path:Path, config:dict, columns_name: str):
     """retorna la cantidad de valores en la columna dada
 
     Args:
@@ -82,8 +78,6 @@ def valuesInColumn(dataset:Path, columns_name: str):
     Returns:
         int: cantidad de valores únicos en la columna
     """    
-    config, core = get_core_info(dataset)
-    archivo_path = dataset / core
     values = set()
     archivo = manejo_archivos.get_archive(archivo_path, **config)
 
@@ -101,7 +95,7 @@ def valuesInColumn(dataset:Path, columns_name: str):
 
 
 #ejercicio 2H
-def valueFrecuenseInColumn(dataset: Path, columns_name: str):
+def valueFrecuenseInColumn(archivo_path:Path, config:dict, columns_name: str):
     """retorna la frecuencia de cada valor en la columna dada
 
     Args:
@@ -111,8 +105,6 @@ def valueFrecuenseInColumn(dataset: Path, columns_name: str):
     Returns:
         dict: diccionario con la frecuencia de cada valor en la columna
     """    
-    config, core = get_core_info(dataset)
-    archivo_path = dataset / core
     archivo = manejo_archivos.get_archive(archivo_path, **config)
     values_in_column = {}
 
