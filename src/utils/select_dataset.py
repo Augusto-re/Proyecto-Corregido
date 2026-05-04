@@ -1,4 +1,4 @@
-from .constantes import DATASETS_PATH_PROCESSED
+from .constantes import DATASETS_PATH_PROCESSED, DATASETS_PATH_RAW
 from .config_archivo import get_core_info
 from pathlib import Path
 
@@ -33,14 +33,15 @@ def ejecutar_sobre_dataset(datasets_paths:list[Path], funcion):
         processed_path = DATASETS_PATH_PROCESSED / raw_path.name
         archivo = processed_path / core
 
-        contexto = {
-            "path": processed_path,
+        datos = {
+            "processed_path": processed_path,
+            "raw_path": raw_path,
             "config": config,
             "core": core,
             "archivo": archivo,
         }
 
-        funcion(contexto)
+        funcion(datos)
 
         ingresar = input("\n¿Desea operar sobre otro dataset? (s/n): ").lower()
         while ingresar not in ['s', 'n']:
