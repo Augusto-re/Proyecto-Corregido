@@ -180,7 +180,9 @@ def columnas_nulas(datasets_paths : list[Path]):
         archivo_path = path / core
         archivo = manejo_archivos.get_archive(archivo_path, **config)
         total = {}
+        total[col]=0
         total_nulos ={}
+        total_nulos[col] =0
         columnas_nulas = []
 
         for fila in archivo:
@@ -190,7 +192,7 @@ def columnas_nulas(datasets_paths : list[Path]):
                     total_nulos[col] +=1
                     
 
-    for col in total:
+        for col in total:
             if total[col] > 0 and total_nulos[col] == total[col]:
                 columnas_nulas.append(col)
 
