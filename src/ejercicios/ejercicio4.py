@@ -30,10 +30,10 @@ def validar_registro(registro, **config):
     for clave, valor in registro.items():
         match clave:
             case "longitudeDecimal" | "decimalLongitude" :
-                if not ejercicio3.coordenadas_validas_longitud(valor):
+                if not ejercicio3.coordenadas_validas_longitud(float(valor)):
                     return False  # coordenadas inválidas
             case "latitudeDecimal" | "decimalLatitude":
-                if not ejercicio3.coordenadas_validas_latitud(valor):
+                if not ejercicio3.coordenadas_validas_latitud(float(valor)):
                     return False  # coordenadas inválidas
             case "countryCode":
                 if not ejercicio3.country_codes_validos(valor):
@@ -47,8 +47,6 @@ def completar_registro_manual(registro):
     Args:
         registro (dict): Registro vacío a completar.
 
-    Returns:
-        dict: Registro completo listo para ser añadido al CSV.
     """
     for clave in registro.keys():
         valor = input(f"Ingrese el valor para '{clave}': ")
@@ -58,8 +56,6 @@ def completar_registro_random(registro):
     """
     Completa un registro vacío con información deducida de acuerdo a cada dataset.
 
-    Returns:
-        dict: Registro completo listo para ser añadido al CSV.
     """
     for clave in registro.keys():
         match clave:

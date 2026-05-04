@@ -191,8 +191,8 @@ def notCordRegister(dataset: Path):
 
     def cord_check(dato):
         
-        latitud = dato.get('decimalLatitude|latitudeDecimal')
-        longitud = dato.get('decimalLongitude|longitudeDecimal')
+        latitud = dato.get('decimalLatitude'|'latitudeDecimal')
+        longitud = dato.get('decimalLongitude'|'longitudeDecimal')
         try:
             latitud = float(latitud)
             longitud = float(longitud)
