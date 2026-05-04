@@ -395,3 +395,47 @@ def coordenadas_fuera_sudamerica(datasets_paths: list[Path]):
                 fuera.append(fila)
 
     return len(fuera), fuera
+
+def validar_latitudes(datasets_paths):
+    errores = []
+
+    for path in datasets_paths:
+        config, core = get_core_info(path)
+        archivo = manejo_archivos.get_archive(path / core, **config)
+
+        for fila in archivo:
+            lat = fila.get("decimalLatitude") or fila.get("latitudeDecimal")
+
+            try:
+                latitud = float(lat)
+                if not coordenadas_validas_latitud(latitud):
+                    errores.append(fila)
+            except (ValueError, TypeError):
+                errores.append(fila)
+
+    return {
+        "cantidad": len(errores),
+        "registros": errores
+    }
+
+def validar_longitudes(datasets_paths):
+    errores = []
+
+    for path in datasets_paths:
+        config, core = get_core_info(path)
+        archivo = manejo_archivos.get_archive(path / core, **config)
+
+        for fila in archivo:
+            lon = fila.get("decimalLongitude") or fila.get("longitudeDecimal")
+
+            try:
+                longitud = float(lon)
+                if not coordenadas_validas_longitud(longitud):
+                    errores.append(fila)
+            except (ValueError, TypeError):
+                errores.append(fila)
+
+    return {
+        "cantidad": len(errores),
+        "registros": errores
+    }
