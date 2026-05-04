@@ -114,7 +114,7 @@ def valueFrecuenseInColumn(archivo_path:Path, config:dict, columns_name: str):
 
 
     return values_in_column
-
+#ejercicio 2I
 def validar_columna_tipo(columna, tipo ):
     iterable = columna.values() if isinstance(columna, dict) else columna
     valores = [v for v in iterable if v is not None and v != ""]
@@ -151,7 +151,7 @@ def validar_columna_tipo(columna, tipo ):
         }
     else :
         print('no se paso un tipo de dato valido ')
-
+#ejercicio 2J
 def columnas_nulas(datasets_paths : list[Path]):
     """"
         esta funcion retorna las keys de las columnas cuyo contenido

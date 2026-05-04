@@ -395,7 +395,7 @@ def coordenadas_fuera_sudamerica(datasets_paths: list[Path]):
                 fuera.append(fila)
 
     return len(fuera), fuera
-
+#---------------------Inciso I----------------------
 def validar_latitudes(datasets_paths):
     errores = []
 
