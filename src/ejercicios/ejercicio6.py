@@ -307,10 +307,3 @@ def validar_y_crear(datos: dict):
     print(f'eliminados: {eliminados} \n porcentaje: {porcentaje} \n motivos: {motivos} \n')
 
     return
-    '''
-    return {
-        "eliminados": eliminados,
-        "porcentaje": porcentaje,
-        "motivos": motivos
-    }
-    '''

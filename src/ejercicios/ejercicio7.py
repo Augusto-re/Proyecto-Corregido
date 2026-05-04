@@ -12,6 +12,7 @@ def fecha_hora_actual():
 def registrar_operacion(operacion, num_registros, nombre_dataset):
 
     fecha = fecha_hora_actual()
+    LOGS_PATH.mkdir(parents=True, exist_ok=True)
     path = LOGS_PATH / 'operatios.log'
     if path.exists():
         append_operations(fecha, operacion, num_registros, nombre_dataset)
