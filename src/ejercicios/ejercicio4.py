@@ -47,8 +47,6 @@ def completar_registro_manual(registro):
     Args:
         registro (dict): Registro vacío a completar.
 
-    Returns:
-        dict: Registro completo listo para ser añadido al CSV.
     """
     for clave in registro.keys():
         valor = input(f"Ingrese el valor para '{clave}': ")
@@ -58,8 +56,6 @@ def completar_registro_random(registro):
     """
     Completa un registro vacío con información deducida de acuerdo a cada dataset.
 
-    Returns:
-        dict: Registro completo listo para ser añadido al CSV.
     """
     for clave in registro.keys():
         match clave:
