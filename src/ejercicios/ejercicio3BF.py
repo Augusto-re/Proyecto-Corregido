@@ -7,6 +7,14 @@ from pathlib import Path
 #inciso B
 def notCordRegister(dataset: Path):
 
+    """retorna los registro sin coordenadas
+
+    Args:
+        dataset (Path): Ruta al dataset
+
+    Returns:
+        list: Lista de registros sin coordenadas
+    """
 
     def cord_check(dato):
         
@@ -37,6 +45,15 @@ def notCordRegister(dataset: Path):
 
   #inciso F  
 def notNumericOrNegative(dataset: Path):
+    """devuelve los registros con valores no numericos o negativos
+
+    Args:
+        dataset (Path): ruta al dataset
+
+    Returns:
+        _type_: lista con los registros con valores no numericos o negativos
+    """
+
     config, core = get_core_info(dataset)
     archivo_path = dataset / core
     archivo = manejo_archivos.get_archive(archivo_path, **config)
