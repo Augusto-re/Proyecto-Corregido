@@ -5,12 +5,6 @@ from pathlib import Path
 import string
 from datetime import datetime
 from utils import manejo_archivos
-from ejercicios.ejercicio3 import (
-    coordenadas_invalidas,
-    fechas_invalidas,
-    registros_duplicados,
-)
-
 
 
 def coordenadas_invalidas (datasets_paths: Path):

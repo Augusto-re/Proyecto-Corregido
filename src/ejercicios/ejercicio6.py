@@ -1,7 +1,8 @@
 from utils.manejo_archivos import get_archive, write_archive
 from utils.constantes import CAMPOS_FECHA_DWC
 import operator
-
+from .ejercicio3 import country_codes_validos, coordenadas_validas_latitud, coordenadas_validas_longitud, validar_fecha_dwc
+from .ejercicio7 import registrar_operacion
 
 def filtro(archivo: list[dict], filtros: dict, condicion='=='):
     """filtro para eliminar registro en datasets
@@ -97,6 +98,7 @@ def eliminar_registro(datos: dict):
 
     nuevo, eliminados = filtro(archivo, filtros)
 
+    registrar_operacion(operacion='DELETE', num_registros=eliminados, nombre_dataset=datos['raw_path'].name)
     if eliminados == 0:
         print(f"No se encontró el registro {id_objetivo}")
         return
@@ -134,6 +136,7 @@ def eliminar_registro_de_columna(datos: dict):
 
     nuevo, eliminados = filtro(archivo, filtros)
 
+    registrar_operacion(operacion='DELETE', num_registros=eliminados, nombre_dataset=datos['raw_path'].name)
     if eliminados == 0:
         print("No se eliminaron registros")
         return
@@ -181,6 +184,7 @@ def eliminar_multiples_columnas_valores(datos: dict):
     condicion = input("ingrese el condicional a poner ej: '=='")
     nuevo, eliminados = filtro(archivo, filtros, condicion)
 
+    registrar_operacion(operacion='DELETE', num_registros=eliminados, nombre_dataset=datos['raw_path'].name)
     if eliminados == 0:
         print("No se eliminaron registros")
         return
@@ -190,9 +194,6 @@ def eliminar_multiples_columnas_valores(datos: dict):
     print(f"Registros eliminados: {eliminados}")
     print("Archivo modificado correctamente")
 
-
-
-from .ejercicio3 import country_codes_validos, coordenadas_validas_latitud, coordenadas_validas_longitud, validar_fecha_dwc
 
 
 def es_fila_valida(fila: dict, name: str, ids_vistos: set):
@@ -302,6 +303,7 @@ def validar_y_crear(datos: dict):
     # guardar nuevo archivo (processed)
     write_archive(registros_validos, processed_path, **config)
 
+    registrar_operacion(operacion='DELETE', num_registros=eliminados, nombre_dataset=datos['raw_path'].name)
     print(f'eliminados: {eliminados} \n porcentaje: {porcentaje} \n motivos: {motivos} \n')
 
     return
