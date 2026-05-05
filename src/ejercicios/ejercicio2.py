@@ -1,5 +1,4 @@
 from utils import manejo_archivos
-from utils.config_archivo import get_core_info
 from pathlib import Path
 
 
@@ -114,79 +113,118 @@ def valueFrecuenseInColumn(archivo_path:Path, config:dict, columns_name: str):
 
 
     return values_in_column
+
+
 #ejercicio 2I
-def validar_columna_tipo(columna, tipo ):
+def validar_columna_tipo(columna, tipo):
     iterable = columna.values() if isinstance(columna, dict) else columna
-    valores = [v for v in iterable if v is not None and v != ""]
-    
-    if not valores :
+
+    valores = []
+    for v in iterable:
+        if v is None:
+            continue
+        if isinstance(v, str):
+            v = v.strip()
+            if v == "":
+                continue
+        valores.append(v)
+
+    if not valores:
         return None
-    
+
+    # -------- NUMERIC --------
     if tipo == "numeric":
-        numeros = [float(v) for v in valores]
-        minimo = min(numeros)
-        maximo = max(numeros)
-        promedio = sum(numeros) / len(numeros)
-        return{
-            "min":minimo,
-            "max": maximo,
-            "promedio": promedio
+        numeros = []
+
+        for v in valores:
+            try:
+                numeros.append(float(v))
+            except (ValueError, TypeError):
+                continue  # ignora valores inválidos
+
+        if not numeros:
+            return None
+
+        return {
+            "min": min(numeros),
+            "max": max(numeros),
+            "promedio": sum(numeros) / len(numeros)
         }
+
+    # -------- COORDINATE --------
     elif tipo == "coordinate":
-        coords = [float(v) for v in valores]
-        minimo2 = min(coords)
-        maximo2 = max(coords)
+        coords = []
+
+        for v in valores:
+            try:
+                coords.append(float(v))
+            except (ValueError, TypeError):
+                continue
+
+        if not coords:
+            return None
+
         return {
-            "min":minimo2,
-            "max": maximo2
+            "min": min(coords),
+            "max": max(coords)
         }
-        
-    elif tipo == "text" :
-        longitudes = [len(v) for v in valores]
-        minimo3 =min(longitudes)
-        maximo3 = max(longitudes)
+
+    # -------- TEXT --------
+    elif tipo == "text":
+        longitudes = []
+
+        for v in valores:
+            if isinstance(v, str):
+                longitudes.append(len(v))
+            else:
+                longitudes.append(len(str(v)))
+
+        if not longitudes:
+            return None
+
         return {
-            "min":minimo3,
-            "max": maximo3
+            "min": min(longitudes),
+            "max": max(longitudes)
         }
-    else :
-        print('no se paso un tipo de dato valido ')
+
+    else:
+        raise ValueError(f"Tipo inválido: {tipo}")
+
+
 #ejercicio 2J
-def columnas_nulas(datasets_paths : list[Path]):
-    """"
-        esta funcion retorna las keys de las columnas cuyo contenido
-        es completamente nulo
-    
+def columnas_nulas(archivo_path: Path, config: dict):
+    """
+    Retorna las columnas cuyo contenido es completamente nulo.
+
     Args:
-        datasets_paths (list[Path]): Rutas a las carpetas de cada dataset.
+        archivo_path (Path): Ruta del dataset.
+        config (dict): Configuración para lectura.
 
     Returns:
-        dict: {nombre_dataset: list[str]} columnas con contenido nulo.
-    
+        list[str]: Columnas con contenido completamente nulo.
     """
-    resultado = {}
 
-    for path in datasets_paths:
-        config, core = get_core_info(path)
-        archivo_path = path / core
-        archivo = manejo_archivos.get_archive(archivo_path, **config)
-        total = {}
-        total[col]=0
-        total_nulos ={}
-        total_nulos[col] =0
-        columnas_nulas = []
+    archivo = manejo_archivos.get_archive(archivo_path, **config)
 
-        for fila in archivo:
-            for col, val in fila.items():   
-                total[col] +=1
-                if val is None or val.strip() == "":
-                    total_nulos[col] +=1
-                    
+    total = {}
+    total_nulos = {}
 
-        for col in total:
-            if total[col] > 0 and total_nulos[col] == total[col]:
-                columnas_nulas.append(col)
+    for fila in archivo:
+        for col, val in fila.items():
+            # Inicializar si no existe
+            if col not in total:
+                total[col] = 0
+                total_nulos[col] = 0
 
-    resultado[path.name] = columnas_nulas
+            total[col] += 1
 
-    return resultado
+            # Validación de nulo robusta
+            if val is None or (isinstance(val, str) and val.strip() == ""):
+                total_nulos[col] += 1
+
+    columnas_nulas = [
+        col for col in total
+        if total[col] > 0 and total[col] == total_nulos[col]
+    ]
+
+    return columnas_nulas

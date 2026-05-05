@@ -56,7 +56,7 @@ $ pip show jupyter
 $ pip install streamlit
 
 # Ejecutar aplicación
-$ stream run nombre_archivo.py
+$ streamlit run nombre_archivo.py
 
 # Finalizar servidor (en consola
 $ ctrl + c

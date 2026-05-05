@@ -67,8 +67,7 @@ def filtro(archivo: list[dict], filtros: dict, condicion='=='):
     return nuevo_archivo, eliminados
 
 def normalizar_id(id_input):
-    """_summary_
-
+    """
     Args:
         id_input (str): ocurrenceID incompleto
 
@@ -85,6 +84,11 @@ def normalizar_id(id_input):
 
 
 def eliminar_registro(datos: dict):
+    """Elimino registro con el id selecionado si es que existe
+
+    Args:
+        datos (dict): _description_
+    """    
     path = datos['archivo']
     config = datos['config']
 
@@ -108,6 +112,11 @@ def eliminar_registro(datos: dict):
 
 
 def eliminar_registro_de_columna(datos: dict):
+    """Eliminar registros de una columna donde el valor sea igual al selecionado
+
+    Args:
+        datos (dict): _description_
+    """    
     path = datos['archivo']
     config = datos['config']
 
@@ -148,6 +157,11 @@ def eliminar_registro_de_columna(datos: dict):
 
 
 def eliminar_multiples_columnas_valores(datos: dict):
+    """solicita las columnas a buscar y para cada columna solicita los valores a eliminar
+
+    Args:
+        datos (dict): _description_
+    """    
     path = datos['archivo']
     config = datos['config']
 
@@ -197,6 +211,16 @@ def eliminar_multiples_columnas_valores(datos: dict):
 
 
 def es_fila_valida(fila: dict, name: str, ids_vistos: set):
+    """varifica si una fila del datasets es valida para ser eliminado
+
+    Args:
+        fila (dict): fila/registro
+        name (str): nombre del dataset (se utiliza porque el datasets iadiza queda vacia por tener coordenadas vacias en cada fila)
+        ids_vistos (set): para eliminar los duplicados
+
+    Returns:
+        _type_: _description_
+    """    
     errores = []
 
     # -------- countryCode --------
@@ -273,6 +297,11 @@ def es_fila_valida(fila: dict, name: str, ids_vistos: set):
 
 
 def validar_y_crear(datos: dict):
+    """valida cada fila del dataset selecionado y valida si cada registro cumple la validacion minima
+
+    Args:
+        datos (dict): _description_
+    """    
     name = datos["raw_path"].name
     raw_path = datos['raw_path'] / datos['core']
     processed_path = datos['archivo']
