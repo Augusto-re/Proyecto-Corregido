@@ -6,7 +6,7 @@ def mostrar_logs_nativos():
     
     root_path = Path(__file__).resolve().parent.parent.parent
     
-    log_path = root_path / "logs" / "operations.log"
+    log_path = root_path / "logs" / "operatios.log"
 
     if log_path.exists():
         try:
