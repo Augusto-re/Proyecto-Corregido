@@ -66,8 +66,9 @@ def porcentaje_nulos_por_columna(datasets_paths, configs):
 
     return resultado
 
-#ejercicio 2G
-def valuesInColumn(archivo_path:Path, config:dict, columns_name: str):
+
+# ejercicio 2G
+def valuesInColumn(archivo_path: Path, config: dict, columns_name: str):
     """retorna la cantidad de valores en la columna dada
 
     Args:
@@ -76,25 +77,27 @@ def valuesInColumn(archivo_path:Path, config:dict, columns_name: str):
 
     Returns:
         int: cantidad de valores únicos en la columna
-    """    
+    """
     values = set()
     archivo = manejo_archivos.get_archive(archivo_path, **config)
 
-    if columns_name not in archivo[0].keys():
-        return 0 #si no existe el nombre de columna
+    primer_registro = next(archivo, None)  # Esto es para tomar el pirmer elemento
+    if primer_registro is None:
+        return 0
 
-    for row in archivo:
+    if columns_name not in primer_registro.keys():
+        return 0
+
+    values.update([primer_registro[columns_name]])
+
+    for row in archivo:  # Aca arranca desde la 2da fila y no pierde el primer registro
         values.update([row[columns_name]])
-
 
     return len(values)
 
 
-
-
-
-#ejercicio 2H
-def valueFrecuenseInColumn(archivo_path:Path, config:dict, columns_name: str):
+# ejercicio 2H
+def valueFrecuenseInColumn(archivo_path: Path, config: dict, columns_name: str):
     """retorna la frecuencia de cada valor en la columna dada
 
     Args:
@@ -103,19 +106,20 @@ def valueFrecuenseInColumn(archivo_path:Path, config:dict, columns_name: str):
 
     Returns:
         dict: diccionario con la frecuencia de cada valor en la columna
-    """    
+    """
     archivo = manejo_archivos.get_archive(archivo_path, **config)
     values_in_column = {}
 
     for row in archivo:
-        value = row.get(columns_name) #accedo a la columna
-        values_in_column[value] = values_in_column.get(value, 0) + 1 #sumo 1 en frecuencia
-
+        value = row.get(columns_name)  # accedo a la columna
+        values_in_column[value] = (
+            values_in_column.get(value, 0) + 1
+        )  # sumo 1 en frecuencia
 
     return values_in_column
 
 
-#ejercicio 2I
+# ejercicio 2I
 def validar_columna_tipo(columna, tipo):
     iterable = columna.values() if isinstance(columna, dict) else columna
 
@@ -148,7 +152,7 @@ def validar_columna_tipo(columna, tipo):
         return {
             "min": min(numeros),
             "max": max(numeros),
-            "promedio": sum(numeros) / len(numeros)
+            "promedio": sum(numeros) / len(numeros),
         }
 
     # -------- COORDINATE --------
@@ -164,10 +168,7 @@ def validar_columna_tipo(columna, tipo):
         if not coords:
             return None
 
-        return {
-            "min": min(coords),
-            "max": max(coords)
-        }
+        return {"min": min(coords), "max": max(coords)}
 
     # -------- TEXT --------
     elif tipo == "text":
@@ -182,16 +183,13 @@ def validar_columna_tipo(columna, tipo):
         if not longitudes:
             return None
 
-        return {
-            "min": min(longitudes),
-            "max": max(longitudes)
-        }
+        return {"min": min(longitudes), "max": max(longitudes)}
 
     else:
         raise ValueError(f"Tipo inválido: {tipo}")
 
 
-#ejercicio 2J
+# ejercicio 2J
 def columnas_nulas(archivo_path: Path, config: dict):
     """
     Retorna las columnas cuyo contenido es completamente nulo.
@@ -223,8 +221,7 @@ def columnas_nulas(archivo_path: Path, config: dict):
                 total_nulos[col] += 1
 
     columnas_nulas = [
-        col for col in total
-        if total[col] > 0 and total[col] == total_nulos[col]
+        col for col in total if total[col] > 0 and total[col] == total_nulos[col]
     ]
 
     return columnas_nulas

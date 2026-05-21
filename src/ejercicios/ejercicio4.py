@@ -4,6 +4,7 @@ import random
 import string
 import json
 
+
 def generar_registro_vacio(header):
     """
     Genera un diccionario vacío con las claves del encabezado.
@@ -14,7 +15,8 @@ def generar_registro_vacio(header):
     Returns:
         dict: Registro vacío con claves del encabezado y valores vacíos.
     """
-    return {columna : ' ' for columna in header}
+    return {columna: " " for columna in header}
+
 
 def validar_registro(registro, **config):
     """
@@ -29,7 +31,7 @@ def validar_registro(registro, **config):
     """
     for clave, valor in registro.items():
         match clave:
-            case "longitudeDecimal" | "decimalLongitude" :
+            case "longitudeDecimal" | "decimalLongitude":
                 if not ejercicio3.coordenadas_validas_longitud(float(valor)):
                     return False  # coordenadas inválidas
             case "latitudeDecimal" | "decimalLatitude":
@@ -38,7 +40,8 @@ def validar_registro(registro, **config):
             case "countryCode":
                 if not ejercicio3.country_codes_validos(valor):
                     return False  # código de país inválido
-    return True   
+    return True
+
 
 def completar_registro_manual(registro):
     """
@@ -52,6 +55,7 @@ def completar_registro_manual(registro):
         valor = input(f"Ingrese el valor para '{clave}': ")
         registro[clave] = valor
 
+
 def completar_registro_random(registro):
     """
     Completa un registro vacío con información deducida de acuerdo a cada dataset.
@@ -60,13 +64,20 @@ def completar_registro_random(registro):
     for clave in registro.keys():
         match clave:
             case "longitudeDecimal" | "decimalLongitude":
-                registro[clave] = random.uniform(-180, 180)  # Genera una longitud aleatoria válida
+                registro[clave] = random.uniform(
+                    -180, 180
+                )  # Genera una longitud aleatoria válida
             case "latitudeDecimal" | "decimalLatitude":
-                registro[clave] = random.uniform(-90, 90)  # Genera una latitud aleatoria válida
+                registro[clave] = random.uniform(
+                    -90, 90
+                )  # Genera una latitud aleatoria válida
             case "countryCode":
-                registro[clave] = "".join(random.choices(string.ascii_uppercase, k=2))  # Genera un código de país aleatorio de dos letras
-            case _ :
-                registro[clave] = "n/n" # Asignamos un valor genérico para otras claves
+                registro[clave] = "".join(
+                    random.choices(string.ascii_uppercase, k=2)
+                )  # Genera un código de país aleatorio de dos letras
+            case _:
+                registro[clave] = "n/n"  # Asignamos un valor genérico para otras claves
+
 
 def traer_ultimo_id_existente(dataset):
     """
@@ -75,42 +86,55 @@ def traer_ultimo_id_existente(dataset):
     Returns:
         str: Último ID existente en el dataset.
     """
-    elemento = dataset[-1]  # Obtener el último elemento del dataset
-    id_ultimo_elemento = elemento.get('id') or elemento.get('gbifID') or elemento.get('ID')
-    return id_ultimo_elemento
+    # elemento = dataset[-1]  # Obtener el último elemento del dataset ---- El problema es que usando el generador no podemos acceder por indice
+    # id_ultimo_elemento = elemento.get('id') or elemento.get('gbifID') or elemento.get('ID')
+    # return id_ultimo_elemento
 
-def generar_id(dataset, datasets_names ):
+    # Recorre el generador guardando siempre el ultimo elemento
+    ultimo = None
+    for elemento in dataset:
+        ultimo = elemento
+    if ultimo is None:
+        return None
+    return ultimo.get("id") or ultimo.get("gbifID") or ultimo.get("ID")
+
+
+def generar_id(dataset, datasets_names):
     """
         Genera un ID para un registro basado en la configuración del dataset.
     Args:
-        
+
     Returns:
         str: ID generado para el registro.
     """
     id_generado = None
-    if (datasets_names == 'A'):
-        ultimo_id = int(traer_ultimo_id_existente(dataset))  
-        id_generado = str(ultimo_id + 1)
-        
-    elif (datasets_names  == 'B'):
+    if datasets_names == "A":
         ultimo_id = int(traer_ultimo_id_existente(dataset))
         id_generado = str(ultimo_id + 1)
-    elif (datasets_names  == 'C'):
+
+    elif datasets_names == "B":
+        ultimo_id = int(traer_ultimo_id_existente(dataset))
+        id_generado = str(ultimo_id + 1)
+    elif datasets_names == "C":
         ultimo_id = traer_ultimo_id_existente(dataset)
-        parte_numerica , parte_alfabetica = ultimo_id.split('@')
-        id_generado =  str(int(parte_numerica) + 1) + '@' + parte_alfabetica
+        parte_numerica, parte_alfabetica = ultimo_id.split("@")
+        id_generado = str(int(parte_numerica) + 1) + "@" + parte_alfabetica
     else:
         print("Nombre de dataset no válido.")
-        
+
     return id_generado
+
 
 def guardar_metadata(meta_path, config):
 
     with meta_path.open("w", encoding="utf-8") as f:
         json.dump(config, f, indent=4)
 
-def insertar_registro(DATASETS_PATH_PROCESSED, nombre_dataset, registro, archivo, **configs):
-    core = configs.get('core')  # nombre del archivo (sin extensión)
+
+def insertar_registro(
+    DATASETS_PATH_PROCESSED, nombre_dataset, registro, archivo, **configs
+):
+    core = configs.get("core")  # nombre del archivo (sin extensión)
 
     # Crear carpeta del dataset
     dir_path = DATASETS_PATH_PROCESSED / nombre_dataset
@@ -119,15 +143,20 @@ def insertar_registro(DATASETS_PATH_PROCESSED, nombre_dataset, registro, archivo
     # Ruta del CSV
     print(dir_path)
     print(core)
-    
+
     ruta_csv = dir_path / f"{core}"
 
     # Insertar o crear
     if ruta_csv.exists():
         manejo_archivos.appened_archive([registro], ruta_csv, **configs)
     else:
-        archivo.append(registro)
-        manejo_archivos.write_archive(archivo, ruta_csv, **configs)
+        # archivo.append(registro) ----> el enerador no tiene metodo append
+        # manejo_archivos.write_archive(archivo, ruta_csv, **configs)
+        filas = list(
+            archivo
+        )  # Aca si tiene sentido tener la lista y todas las filas para escribirlas en el nuevo archivo
+        filas.append(registro)
+        manejo_archivos.write_archive(filas, ruta_csv, **configs)
 
     ruta_meta_json = dir_path / "meta.json"
     # Guardar metadata

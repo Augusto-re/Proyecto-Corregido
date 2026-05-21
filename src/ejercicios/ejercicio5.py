@@ -63,7 +63,10 @@ def actualizar_campo(path_raw: Path, id_registro: str, columna: str, nuevo_valor
         bool: True si se encontró y modificó el registro, False si no se encontró.
     """
     config, core = get_core_info(path_raw)
-    archivo = manejo_archivos.get_archive(path_raw / core, **config)
+    # archivo = manejo_archivos.get_archive(path_raw / core, **config) ---> aca antes recibia la lista, ahora recibo un generador
+    archivo = list(
+        manejo_archivos.get_archive(path_raw / core, **config)
+    )  # aca me trae el generador completo antesw de empezar
 
     encontrado = False
     for fila in archivo:
@@ -97,7 +100,9 @@ def actualizar_campos(path_raw: Path, id_registro: str, nuevos_valores: dict):
         bool: True si se encontró y modificó el registro, False si no se encontró.
     """
     config, core = get_core_info(path_raw)
-    archivo = manejo_archivos.get_archive(path_raw / core, **config)
+    archivo = list(
+        manejo_archivos.get_archive(path_raw / core, **config)
+    )  # me traigo el generador completo
 
     encontrado = False
     for fila in archivo:
@@ -132,7 +137,9 @@ def actualizar_campos_validado(path_raw: Path, id_registro: str, nuevos_valores:
         bool: True si la validación pasó y se guardaron los cambios, False si falló.
     """
     config, core = get_core_info(path_raw)
-    archivo = manejo_archivos.get_archive(path_raw / core, **config)
+    archivo = list(
+        manejo_archivos.get_archive(path_raw / core, **config)
+    )  # me traigo el generador completo
 
     encontrado = False
     for fila in archivo:

@@ -1,10 +1,17 @@
 from utils.manejo_archivos import get_archive, write_archive
 from utils.constantes import CAMPOS_FECHA_DWC
 import operator
-from .ejercicio3 import country_codes_validos, coordenadas_validas_latitud, coordenadas_validas_longitud, validar_fecha_dwc
+from .ejercicio3 import (
+    country_codes_validos,
+    coordenadas_validas_latitud,
+    coordenadas_validas_longitud,
+    validar_fecha_dwc,
+)
 from .ejercicio7 import registrar_operacion
+import itertools  ##A chequear
 
-def filtro(archivo: list[dict], filtros: dict, condicion='=='):
+
+def filtro(archivo: list[dict], filtros: dict, condicion="=="):
     """filtro para eliminar registro en datasets
 
     Args:
@@ -14,23 +21,23 @@ def filtro(archivo: list[dict], filtros: dict, condicion='=='):
 
     Returns:
         nuevo_registro (list[dict]): lista de registros con el filtro aplicado
-        eliminados (int): cantidad de registro eliminados 
-    """    
+        eliminados (int): cantidad de registro eliminados
+    """
     # operaciones de comparacion
     ops = {
-        '==': operator.eq,
-        '!=': operator.ne,
-        '>=': operator.ge,
-        '>': operator.gt,
-        '<=': operator.le,
-        '<': operator.lt
+        "==": operator.eq,
+        "!=": operator.ne,
+        ">=": operator.ge,
+        ">": operator.gt,
+        "<=": operator.le,
+        "<": operator.lt,
     }
 
     try:
         op = ops[condicion]
     except:
         return [], 0
-    
+
     nuevo_archivo = []
     eliminados = 0
 
@@ -66,6 +73,7 @@ def filtro(archivo: list[dict], filtros: dict, condicion='=='):
 
     return nuevo_archivo, eliminados
 
+
 def normalizar_id(id_input):
     """
     Args:
@@ -73,13 +81,13 @@ def normalizar_id(id_input):
 
     Returns:
         str: devuelve el ocurrence id completo como esta en los archivos
-    """    
+    """
     prefijo = "IADIZA:COI:"
-    
+
     # si comineza con el prefijo se deduse que esta bien escrito
     if id_input.startswith(prefijo):
         return id_input
-    
+
     return f"{prefijo}{id_input.zfill(6)}"
 
 
@@ -88,21 +96,23 @@ def eliminar_registro(datos: dict):
 
     Args:
         datos (dict): _description_
-    """    
-    path = datos['archivo']
-    config = datos['config']
+    """
+    path = datos["archivo"]
+    config = datos["config"]
 
     id_objetivo = normalizar_id(input("Ingrese occurrenceID: "))
 
     archivo = get_archive(path, **config)
 
-    filtros = {
-        "occurrenceID": [id_objetivo]
-    }
+    filtros = {"occurrenceID": [id_objetivo]}
 
     nuevo, eliminados = filtro(archivo, filtros)
 
-    registrar_operacion(operacion='DELETE', num_registros=eliminados, nombre_dataset=datos['raw_path'].name)
+    registrar_operacion(
+        operacion="DELETE",
+        num_registros=eliminados,
+        nombre_dataset=datos["raw_path"].name,
+    )
     if eliminados == 0:
         print(f"No se encontró el registro {id_objetivo}")
         return
@@ -116,12 +126,22 @@ def eliminar_registro_de_columna(datos: dict):
 
     Args:
         datos (dict): _description_
-    """    
-    path = datos['archivo']
-    config = datos['config']
+    """
+    import itertools
+
+    path = datos["archivo"]
+    config = datos["config"]
 
     archivo = get_archive(path, **config)
-    columnas = list(archivo[0].keys())
+
+    primer_registro = next(archivo, None)
+    if primer_registro is None:
+        print("El archivo está vacío.")
+        return
+    columnas = list(primer_registro.keys())
+    archivo = itertools.chain(
+        [primer_registro], archivo
+    )  # Crea un nuevo iterador que primero devuelve el primer registro y despues sigue con el resto del generador. esto es para que filtro despues no pierda el primer elemento
 
     print("Seleccione columna de interés")
     for i, col in enumerate(columnas):
@@ -139,13 +159,15 @@ def eliminar_registro_de_columna(datos: dict):
             break
         valores.append(v)
 
-    filtros = {
-        columna: valores
-    }
+    filtros = {columna: valores}
 
     nuevo, eliminados = filtro(archivo, filtros)
 
-    registrar_operacion(operacion='DELETE', num_registros=eliminados, nombre_dataset=datos['raw_path'].name)
+    registrar_operacion(
+        operacion="DELETE",
+        num_registros=eliminados,
+        nombre_dataset=datos["raw_path"].name,
+    )
     if eliminados == 0:
         print("No se eliminaron registros")
         return
@@ -161,9 +183,9 @@ def eliminar_multiples_columnas_valores(datos: dict):
 
     Args:
         datos (dict): _description_
-    """    
-    path = datos['archivo']
-    config = datos['config']
+    """
+    path = datos["archivo"]
+    config = datos["config"]
 
     archivo = get_archive(path, **config)
     columnas = list(archivo[0].keys())
@@ -198,7 +220,11 @@ def eliminar_multiples_columnas_valores(datos: dict):
     condicion = input("ingrese el condicional a poner ej: '=='")
     nuevo, eliminados = filtro(archivo, filtros, condicion)
 
-    registrar_operacion(operacion='DELETE', num_registros=eliminados, nombre_dataset=datos['raw_path'].name)
+    registrar_operacion(
+        operacion="DELETE",
+        num_registros=eliminados,
+        nombre_dataset=datos["raw_path"].name,
+    )
     if eliminados == 0:
         print("No se eliminaron registros")
         return
@@ -207,7 +233,6 @@ def eliminar_multiples_columnas_valores(datos: dict):
 
     print(f"Registros eliminados: {eliminados}")
     print("Archivo modificado correctamente")
-
 
 
 def es_fila_valida(fila: dict, name: str, ids_vistos: set):
@@ -220,7 +245,7 @@ def es_fila_valida(fila: dict, name: str, ids_vistos: set):
 
     Returns:
         _type_: _description_
-    """    
+    """
     errores = []
 
     # -------- countryCode --------
@@ -285,7 +310,7 @@ def es_fila_valida(fila: dict, name: str, ids_vistos: set):
             errores.append("fecha inválida")
 
     # -------- duplicados --------
-    id_dato = fila.get('id') or fila.get('gbifID') or fila.get('ID')
+    id_dato = fila.get("id") or fila.get("gbifID") or fila.get("ID")
 
     if id_dato:
         if id_dato in ids_vistos:
@@ -301,22 +326,24 @@ def validar_y_crear(datos: dict):
 
     Args:
         datos (dict): _description_
-    """    
+    """
     name = datos["raw_path"].name
-    raw_path = datos['raw_path'] / datos['core']
-    processed_path = datos['archivo']
+    raw_path = datos["raw_path"] / datos["core"]
+    processed_path = datos["archivo"]
 
-    config = datos['config']
+    config = datos["config"]
 
     archivo = get_archive(raw_path, **config)
 
     registros_validos = []
     eliminados = 0
     motivos = {}
+    total = 0  # contador
 
     ids_vistos = set()
-    
+
     for fila in archivo:
+        total += 1
         es_valida, errores = es_fila_valida(fila, name, ids_vistos)
 
         if es_valida:
@@ -325,14 +352,18 @@ def validar_y_crear(datos: dict):
             eliminados += 1
             for error in errores:
                 motivos[error] = motivos.get(error, 0) + 1
-
-    total = len(archivo)
     porcentaje = (eliminados / total * 100) if total > 0 else 0
 
     # guardar nuevo archivo (processed)
     write_archive(registros_validos, processed_path, **config)
 
-    registrar_operacion(operacion='DELETE', num_registros=eliminados, nombre_dataset=datos['raw_path'].name)
-    print(f'eliminados: {eliminados} \n porcentaje: {porcentaje} \n motivos: {motivos} \n')
+    registrar_operacion(
+        operacion="DELETE",
+        num_registros=eliminados,
+        nombre_dataset=datos["raw_path"].name,
+    )
+    print(
+        f"eliminados: {eliminados} \n porcentaje: {porcentaje} \n motivos: {motivos} \n"
+    )
 
     return

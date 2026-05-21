@@ -1,5 +1,5 @@
 from utils import manejo_archivos
-from utils.config_archivo import  get_core_info
+from utils.config_archivo import get_core_info
 from utils.constantes import CAMPOS_FECHA_DWC
 from pathlib import Path
 import string
@@ -7,7 +7,7 @@ from datetime import datetime
 from utils import manejo_archivos
 
 
-def coordenadas_invalidas (datasets_paths: Path):
+def coordenadas_invalidas(datasets_paths: Path):
     """
     Args:
         datasets_paths (Path): rutas de los archivos a buscar
@@ -20,8 +20,8 @@ def coordenadas_invalidas (datasets_paths: Path):
     # decimalLongitude
     def revisar_coordenadas(dato):
         # GET porque hay datos que no tienen ese campo
-        lat = dato.get('decimalLatitude')
-        lon = dato.get('decimalLongitude')
+        lat = dato.get("decimalLatitude")
+        lon = dato.get("decimalLongitude")
         try:
             latitud = float(lat)
             longitud = float(lon)
@@ -32,19 +32,22 @@ def coordenadas_invalidas (datasets_paths: Path):
             return True  # inválido
 
         return False  # válido
-    
+
     coordenadas_invalidas = []
     for path in datasets_paths:
         config, core = get_core_info(path)
         path = path / core
 
         archivo = manejo_archivos.get_archive(path, **config)
-        
-        coordenadas_invalidas.extend(list(filter(revisar_coordenadas, archivo)))
+
+        coordenadas_invalidas.extend(
+            filter(revisar_coordenadas, archivo)
+        )  # filter ya es un iterador
 
     return len(coordenadas_invalidas), coordenadas_invalidas
 
-def coordenadas_validas_longitud (VALOR):
+
+def coordenadas_validas_longitud(VALOR):
     """
     Args:
         valor (str): valor a verificar
@@ -57,7 +60,8 @@ def coordenadas_validas_longitud (VALOR):
 
     return True  # válido
 
-def coordenadas_validas_latitud (VALOR):
+
+def coordenadas_validas_latitud(VALOR):
     """
     Args:
         valor (str): valor a verificar
@@ -70,7 +74,6 @@ def coordenadas_validas_latitud (VALOR):
         return False  # inválido
 
     return True  # válido
-
 
 
 def validar_fecha_dwc(valor):
@@ -108,6 +111,7 @@ def fechas_invalidas(datasets_paths: Path):
     Returns:
         tuple: cantidad de errores y lista de registros con fecha inválida
     """
+
     def revisar_fechas(dato):
         for campo in CAMPOS_FECHA_DWC:
             valor = dato.get(campo)
@@ -120,9 +124,12 @@ def fechas_invalidas(datasets_paths: Path):
         config, core = get_core_info(path)
         path = path / core
         archivo = manejo_archivos.get_archive(path, **config)
-        fechas_invalidas.extend(list(filter(revisar_fechas, archivo)))
+        fechas_invalidas.extend(
+            filter(revisar_fechas, archivo)
+        )  # filter ya es un iterador
 
     return len(fechas_invalidas), fechas_invalidas
+
 
 # ---------------------Inciso D----------------------
 def registros_duplicados(datasets_paths: Path):
@@ -144,7 +151,7 @@ def registros_duplicados(datasets_paths: Path):
         archivo = manejo_archivos.get_archive(path, **config)
 
         for dato in archivo:
-            id_dato = dato.get('id') or dato.get('gbifID') or dato.get('ID')
+            id_dato = dato.get("id") or dato.get("gbifID") or dato.get("ID")
             if id_dato in ids_vistos:
                 ids_duplicados.add(id_dato)
             else:
@@ -152,7 +159,8 @@ def registros_duplicados(datasets_paths: Path):
 
     return len(ids_duplicados), list(ids_duplicados)
 
-#---------------------Inciso E----------------------
+
+# ---------------------Inciso E----------------------
 # countryCode / countryCode
 def country_codes_validos(VALOR):
     """
@@ -164,16 +172,18 @@ def country_codes_validos(VALOR):
     """
 
     # Lista de códigos de país válidos
-    codigos_paises_validos = set(string.ascii_uppercase[i] 
-                                 + string.ascii_uppercase[j] 
-                                 for i in range(26) for j in range(26))
-
+    codigos_paises_validos = set(
+        string.ascii_uppercase[i] + string.ascii_uppercase[j]
+        for i in range(26)
+        for j in range(26)
+    )
 
     return VALOR in codigos_paises_validos
 
-    #inciso B
-def notCordRegister(dataset: Path):
+    # inciso B
 
+
+def notCordRegister(dataset: Path):
     """retorna los registro sin coordenadas
 
     Args:
@@ -184,33 +194,27 @@ def notCordRegister(dataset: Path):
     """
 
     def cord_check(dato):
-        
-        latitud = dato.get('decimalLatitude'|'latitudeDecimal')
-        longitud = dato.get('decimalLongitude'|'longitudeDecimal')
+
+        latitud = dato.get("decimalLatitude") or dato.get("latitudeDecimal")
+        longitud = dato.get("decimalLongitude") or dato.get("longitudeDecimal")
         try:
             latitud = float(latitud)
             longitud = float(longitud)
-        except :
+        except:
             return True  # inválido
         return False
-    
-
-
-
 
     notCordRegister = []
-    config,core = get_core_info(dataset)
+    config, core = get_core_info(dataset)
     path = dataset / core
-    archivo = manejo_archivos.get_archive(path,**config)
+    archivo = manejo_archivos.get_archive(path, **config)
     for row in archivo:
         if cord_check(row):
             notCordRegister.append(row)
     return notCordRegister
 
 
-
-
-  #inciso F  
+# inciso F
 def notNumericOrNegative(dataset: Path):
     """devuelve los registros con valores no numericos o negativos
 
@@ -224,19 +228,21 @@ def notNumericOrNegative(dataset: Path):
     config, core = get_core_info(dataset)
     archivo_path = dataset / core
     archivo = manejo_archivos.get_archive(archivo_path, **config)
-    
+
     def notNumeric(value):
         try:
             float(value)
             return False
         except (ValueError, TypeError):
             return True
+
     notValidsReg = []
     for row in archivo:
-        dato = row.get('coordinateUncertaintyInMeters')
+        dato = row.get("coordinateUncertaintyInMeters")
         if notNumeric(dato):
             notValidsReg.append(row)
     return notValidsReg
+
 
 from ejercicios.ejercicio3 import (
     coordenadas_invalidas,
@@ -389,7 +395,9 @@ def coordenadas_fuera_sudamerica(datasets_paths: list[Path]):
                 fuera.append(fila)
 
     return len(fuera), fuera
-#---------------------Inciso I----------------------
+
+
+# ---------------------Inciso I----------------------
 def validar_latitudes(datasets_paths):
     errores = []
 
@@ -407,10 +415,8 @@ def validar_latitudes(datasets_paths):
             except (ValueError, TypeError):
                 errores.append(fila)
 
-    return {
-        "cantidad": len(errores),
-        "registros": errores
-    }
+    return {"cantidad": len(errores), "registros": errores}
+
 
 def validar_longitudes(datasets_paths):
     errores = []
@@ -429,7 +435,4 @@ def validar_longitudes(datasets_paths):
             except (ValueError, TypeError):
                 errores.append(fila)
 
-    return {
-        "cantidad": len(errores),
-        "registros": errores
-    }
+    return {"cantidad": len(errores), "registros": errores}
